@@ -124,7 +124,7 @@ func main() {
 	to0 := &fdo.TO0Server{
 		Session:                  state,
 		RVBlobs:                  state,
-		AcceptVoucher:            MakeAcceptVoucher(cfg, state.DB()),
+		AcceptVoucherWithInfo:    MakeAcceptVoucherWithInfo(cfg, state.DB()),
 		VoucherReplacementPolicy: rvPolicy,
 	}
 

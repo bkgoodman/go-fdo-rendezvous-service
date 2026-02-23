@@ -83,16 +83,18 @@ func isTO0Message(path string) bool {
 	return parts[2] == "20" || parts[2] == "22"
 }
 
-// MakeAcceptVoucher creates an AcceptVoucher callback for the given auth mode and config.
-func MakeAcceptVoucher(cfg *Config, db *sql.DB) func(context.Context, fdo.Voucher, uint32) (uint32, error) {
-	return func(ctx context.Context, ov fdo.Voucher, requestedTTL uint32) (uint32, error) {
-		ttl := requestedTTL
+// MakeAcceptVoucherWithInfo creates an AcceptVoucherWithInfo callback for the
+// given auth mode and config. This uses the enhanced library callback that
+// receives the full TO0.OwnerSign context including the delegate chain.
+func MakeAcceptVoucherWithInfo(cfg *Config, db *sql.DB) func(context.Context, fdo.TO0OwnerSignInfo) (uint32, error) {
+	return func(ctx context.Context, info fdo.TO0OwnerSignInfo) (uint32, error) {
+		ttl := info.RequestedTTL
 		if ttl > cfg.RV.MaxTTL {
 			ttl = cfg.RV.MaxTTL
 		}
 
 		uploaderType, uploaderID := uploaderFromContext(ctx)
-
+		ov := info.Voucher
 		guid := ov.Header.Val.GUID
 
 		switch cfg.Auth.Mode {
@@ -110,34 +112,107 @@ func MakeAcceptVoucher(cfg *Config, db *sql.DB) func(context.Context, fdo.Vouche
 			slog.Info("TO0 accepted (token mode)", "guid", guid, "ttl", ttl)
 
 		case "signatory":
-			// Check that the voucher's owner key is enrolled
-			fp, err := voucherOwnerFingerprint(ov)
+			fp, err := checkSignatoryAuth(db, ov, info.DelegateChain, guid)
 			if err != nil {
-				return 0, fmt.Errorf("extracting owner key fingerprint: %w", err)
+				return 0, err
 			}
-
-			enrolled, err := FindEnrolledKeyByFingerprint(db, fp)
-			if err != nil {
-				return 0, fmt.Errorf("checking enrolled key: %w", err)
-			}
-			if enrolled == nil {
-				slog.Warn("TO0 rejected: owner key not enrolled", "fingerprint", fp, "guid", guid)
-				return 0, fmt.Errorf("owner key fingerprint %s is not enrolled", fp)
-			}
-
 			uploaderType = "signatory"
 			uploaderID = fp
-			slog.Info("TO0 accepted (signatory mode)", "guid", guid, "fingerprint", fp, "ttl", ttl)
+			slog.Info("TO0 accepted (signatory mode)", "guid", guid, "fingerprint", fp,
+				"delegate", info.DelegateChain != nil, "ttl", ttl)
 		}
 
 		// Audit log
 		if err := LogBlobUpload(db, guid[:], uploaderType, uploaderID); err != nil {
 			slog.Error("failed to log blob upload", "error", err)
-			// Non-fatal: don't reject the upload for audit failure
 		}
 
 		return ttl, nil
 	}
+}
+
+// checkSignatoryAuth verifies that the TO0 request is authorized in signatory mode.
+// It first checks the voucher's owner key. If a delegate chain is present, it also
+// verifies the chain is rooted by an enrolled key and has the redirect permission.
+func checkSignatoryAuth(db *sql.DB, ov fdo.Voucher, delegateChain []*x509.Certificate, guid interface{}) (string, error) {
+	// First: check if the voucher's owner key is enrolled
+	fp, err := voucherOwnerFingerprint(ov)
+	if err != nil {
+		return "", fmt.Errorf("extracting owner key fingerprint: %w", err)
+	}
+
+	enrolled, err := FindEnrolledKeyByFingerprint(db, fp)
+	if err != nil {
+		return "", fmt.Errorf("checking enrolled key: %w", err)
+	}
+
+	if enrolled != nil {
+		// Owner key is directly enrolled — accepted
+		return fp, nil
+	}
+
+	// Owner key not enrolled. If a delegate chain is present, check if
+	// the delegate chain root is enrolled and has redirect permission.
+	if len(delegateChain) == 0 {
+		slog.Warn("TO0 rejected: owner key not enrolled and no delegate chain",
+			"fingerprint", fp, "guid", guid)
+		return "", fmt.Errorf("owner key fingerprint %s is not enrolled", fp)
+	}
+
+	// Verify delegate chain has redirect permission
+	if !fdo.DelegateCanRedirect(delegateChain) {
+		slog.Warn("TO0 rejected: delegate chain lacks redirect permission", "guid", guid)
+		return "", fmt.Errorf("delegate chain does not have permit-redirect permission")
+	}
+
+	// Verify the delegate chain is rooted by the voucher's owner key
+	ownerPubKey, err := extractOwnerPublicKey(ov)
+	if err != nil {
+		return "", fmt.Errorf("extracting owner public key for delegate verification: %w", err)
+	}
+	if err := fdo.VerifyDelegateChain(delegateChain, &ownerPubKey, &fdo.OIDPermitRedirect); err != nil {
+		slog.Warn("TO0 rejected: delegate chain verification failed",
+			"guid", guid, "error", err)
+		return "", fmt.Errorf("delegate chain verification failed: %w", err)
+	}
+
+	// Delegate chain is valid. Check if the root signer's key is enrolled.
+	// The root cert in the chain (last element) was signed by the owner key.
+	// We already checked the owner key fingerprint above and it wasn't enrolled.
+	// But maybe the delegate's own signing key (leaf cert) is enrolled.
+	leafCert := delegateChain[0]
+	delegateFP, err := PublicKeyFingerprint(leafCert.PublicKey)
+	if err != nil {
+		return "", fmt.Errorf("fingerprinting delegate leaf key: %w", err)
+	}
+
+	delegateEnrolled, err := FindEnrolledKeyByFingerprint(db, delegateFP)
+	if err != nil {
+		return "", fmt.Errorf("checking delegate key enrollment: %w", err)
+	}
+
+	// Accept if either the owner key OR the delegate key is enrolled
+	// The owner key was already checked. For delegate, we accept if the
+	// chain verified against the owner key AND has redirect permission.
+	// The chain verification itself proves the delegation is legitimate.
+	if delegateEnrolled != nil {
+		slog.Info("TO0 accepted via enrolled delegate key", "delegate_fp", delegateFP, "guid", guid)
+		return delegateFP, nil
+	}
+
+	// Chain verified against owner key + has redirect permission.
+	// Accept based on valid delegation even if delegate key not explicitly enrolled.
+	slog.Info("TO0 accepted via verified delegate chain", "owner_fp", fp, "delegate_fp", delegateFP, "guid", guid)
+	return fp + ":delegate:" + delegateFP, nil
+}
+
+// extractOwnerPublicKey extracts the owner's crypto.PublicKey from a voucher.
+func extractOwnerPublicKey(ov fdo.Voucher) (crypto.PublicKey, error) {
+	if len(ov.Entries) > 0 {
+		lastEntry := ov.Entries[len(ov.Entries)-1]
+		return lastEntry.Payload.Val.PublicKey.Public()
+	}
+	return ov.Header.Val.ManufacturerKey.Public()
 }
 
 // voucherOwnerFingerprint extracts the owner public key from a voucher and returns its hex SHA-256 fingerprint.

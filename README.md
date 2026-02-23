@@ -222,15 +222,27 @@ This server is designed to work with:
 ## Running Tests
 
 ```bash
-# Unit tests
+# Run all tests (unit + integration)
+go build -o fdo-rendezvous .
+./tests/run_all_tests.sh
+
+# Unit tests only
 go test -v ./...
 
-# Integration tests (requires built binary)
+# Individual integration tests (requires built binary)
 go build -o fdo-rendezvous .
 ./tests/test-open-mode.sh
 ./tests/test-token-mode.sh
 ./tests/test-admin-cli.sh
 ```
+
+The `run_all_tests.sh` script runs:
+- All unit tests (`go test ./...`)
+- Admin CLI integration tests (19 assertions)
+- Open mode integration tests (5 assertions)  
+- Token mode integration tests (4 assertions)
+
+All tests must pass for a successful run.
 
 ## License
 
