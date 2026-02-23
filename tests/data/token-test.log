@@ -1,0 +1,15 @@
+time=2026-02-23T17:26:59.600Z level=INFO msg="FDO Rendezvous Server starting" addr=localhost:8182 auth_mode=token replacement_policy=allow-any
+time=2026-02-23T17:27:00.163Z level=DEBUG msg=request method=POST path=/fdo/101/msg/20 remote=127.0.0.1:56198
+time=2026-02-23T17:27:00.163Z level=DEBUG msg=response method=POST path=/fdo/101/msg/20 duration=140.288µs
+time=2026-02-23T17:27:00.177Z level=DEBUG msg=request method=POST path=/fdo/101/msg/20 remote=127.0.0.1:56202
+time=2026-02-23T17:27:00.178Z level=DEBUG msg=response method=POST path=/fdo/101/msg/20 duration=651.709µs
+time=2026-02-23T17:27:00.190Z level=DEBUG msg=request method=POST path=/fdo/101/msg/20 remote=127.0.0.1:56206
+time=2026-02-23T17:27:00.195Z level=DEBUG msg=request dump="POST /fdo/101/msg/20 HTTP/1.1\\r\\nHost: localhost:8182\\r\\nAccept: */*\\r\\nAuthorization: Bearer test-secret-token\\r\\nContent-Length: 0\\r\\nContent-Type: application/cbor\\r\\nUser-Agent: curl/7.81.0" body=""
+time=2026-02-23T17:27:00.200Z level=DEBUG msg=response dump="HTTP/1.1 200 OK\\r\\nContent-Length: 50\\r\\nAuthorization: Bearer TJkhVtjT09BFF6JKvT65Vr3LP-ow-vE41HxutKzM7ICdyFLft6js59ulIUARi4o0\\r\\nContent-Type: application/cbor\\r\\nMessage-Type: 255" body="[500, 20, \"error decoding TO0.Hello request: EOF\", 1771867620, null]"
+time=2026-02-23T17:27:00.200Z level=DEBUG msg=response method=POST path=/fdo/101/msg/20 duration=10.218099ms
+time=2026-02-23T17:27:00.214Z level=DEBUG msg=request method=POST path=/fdo/101/msg/30 remote=127.0.0.1:56208
+time=2026-02-23T17:27:00.222Z level=DEBUG msg=request dump="POST /fdo/101/msg/30 HTTP/1.1\\r\\nHost: localhost:8182\\r\\nAccept: */*\\r\\nContent-Length: 0\\r\\nContent-Type: application/cbor\\r\\nUser-Agent: curl/7.81.0" body=""
+time=2026-02-23T17:27:00.227Z level=DEBUG msg=response dump="HTTP/1.1 200 OK\\r\\nContent-Length: 53\\r\\nAuthorization: Bearer lD802P44t2W3y8et1w2XB4rh363fI2H8c0DrpmWl_OGv0dxecN5T5DEk32ZPKyAY\\r\\nContent-Type: application/cbor\\r\\nMessage-Type: 255" body="[500, 30, \"error decoding TO1.HelloRV request: EOF\", 1771867620, null]"
+time=2026-02-23T17:27:00.227Z level=DEBUG msg=response method=POST path=/fdo/101/msg/30 duration=12.943982ms
+time=2026-02-23T17:27:00.230Z level=INFO msg="shutting down server..."
+time=2026-02-23T17:27:00.230Z level=INFO msg="server stopped"

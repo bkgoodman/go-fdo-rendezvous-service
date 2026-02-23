@@ -1,0 +1,43 @@
+# FDO Rendezvous Server Configuration
+
+debug: false
+
+server:
+  addr: "localhost:8080"
+  ext_addr: ""
+  use_tls: false
+
+database:
+  path: "rendezvous.db"
+  password: ""
+
+# Authentication mode for TO0 (owner blob upload)
+# - "open": accept all TO0 requests (no authentication)
+# - "token": require HTTP Authorization: Bearer token
+# - "signatory": require voucher owner key to be enrolled
+auth:
+  mode: "open"
+
+# Rendezvous blob settings
+rv:
+  # Voucher replacement policy:
+  #   allow-any          - any owner can replace any blob (default)
+  #   mfg-consistency    - only same manufacturer key can replace
+  #   first-lock         - first uploader locks the GUID
+  #   owner-consistency  - only same owner key can replace
+  replacement_policy: "allow-any"
+  # Maximum TTL cap (seconds). Requested TTLs above this are clamped.
+  max_ttl: 4294967295
+
+# DID:web key enrollment settings
+did:
+  # Hours before a DID:web key is lazily re-resolved (default 24h)
+  refresh_hours: 24
+  # Allow HTTP instead of HTTPS for DID:web resolution (dev/test only)
+  insecure_http: false
+
+# Background pruning of expired/inactive blobs
+pruning:
+  enabled: false
+  inactive_hours: 720      # 30 days
+  interval_minutes: 60
