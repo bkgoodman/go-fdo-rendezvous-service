@@ -1,15 +1,15 @@
-time=2026-02-23T17:49:38.998Z level=INFO msg="FDO Rendezvous Server starting" addr=localhost:8182 auth_mode=token replacement_policy=allow-any
-time=2026-02-23T17:49:39.579Z level=DEBUG msg=request method=POST path=/fdo/101/msg/20 remote=127.0.0.1:38664
-time=2026-02-23T17:49:39.579Z level=DEBUG msg=response method=POST path=/fdo/101/msg/20 duration=111.054µs
-time=2026-02-23T17:49:39.591Z level=DEBUG msg=request method=POST path=/fdo/101/msg/20 remote=127.0.0.1:38680
-time=2026-02-23T17:49:39.594Z level=DEBUG msg=response method=POST path=/fdo/101/msg/20 duration=2.407475ms
-time=2026-02-23T17:49:39.605Z level=DEBUG msg=request method=POST path=/fdo/101/msg/20 remote=127.0.0.1:38692
-time=2026-02-23T17:49:39.610Z level=DEBUG msg=request dump="POST /fdo/101/msg/20 HTTP/1.1\\r\\nHost: localhost:8182\\r\\nAccept: */*\\r\\nAuthorization: Bearer test-secret-token\\r\\nContent-Length: 0\\r\\nContent-Type: application/cbor\\r\\nUser-Agent: curl/7.81.0" body=""
-time=2026-02-23T17:49:39.614Z level=DEBUG msg=response dump="HTTP/1.1 200 OK\\r\\nContent-Length: 50\\r\\nAuthorization: Bearer 90POrKbcYknHH-yijaE9Klz7bFhV4XZDQxOAahVrCNQFykOJVndZXl2gs2kToWwS\\r\\nContent-Type: application/cbor\\r\\nMessage-Type: 255" body="[500, 20, \"error decoding TO0.Hello request: EOF\", 1771868979, null]"
-time=2026-02-23T17:49:39.614Z level=DEBUG msg=response method=POST path=/fdo/101/msg/20 duration=9.343551ms
-time=2026-02-23T17:49:39.629Z level=DEBUG msg=request method=POST path=/fdo/101/msg/30 remote=127.0.0.1:38708
-time=2026-02-23T17:49:39.636Z level=DEBUG msg=request dump="POST /fdo/101/msg/30 HTTP/1.1\\r\\nHost: localhost:8182\\r\\nAccept: */*\\r\\nContent-Length: 0\\r\\nContent-Type: application/cbor\\r\\nUser-Agent: curl/7.81.0" body=""
-time=2026-02-23T17:49:39.641Z level=DEBUG msg=response dump="HTTP/1.1 200 OK\\r\\nContent-Length: 53\\r\\nAuthorization: Bearer sja23hmR98xEJGb2O4p3qWqk0MbGmJvaczcQmDYVoTNnlUSYBb-Ybi1AFRY0Uv1j\\r\\nContent-Type: application/cbor\\r\\nMessage-Type: 255" body="[500, 30, \"error decoding TO1.HelloRV request: EOF\", 1771868979, null]"
-time=2026-02-23T17:49:39.641Z level=DEBUG msg=response method=POST path=/fdo/101/msg/30 duration=11.94493ms
-time=2026-02-23T17:49:39.643Z level=INFO msg="shutting down server..."
-time=2026-02-23T17:49:39.643Z level=INFO msg="server stopped"
+time=2026-02-27T16:33:00.304Z level=INFO msg="FDO Rendezvous Server starting" addr=localhost:8182 auth_mode=token replacement_policy=allow-any
+time=2026-02-27T16:33:00.882Z level=DEBUG msg=request method=POST path=/fdo/101/msg/20 remote=127.0.0.1:45590
+time=2026-02-27T16:33:00.882Z level=DEBUG msg=response method=POST path=/fdo/101/msg/20 duration=116.095µs
+time=2026-02-27T16:33:00.895Z level=DEBUG msg=request method=POST path=/fdo/101/msg/20 remote=127.0.0.1:45606
+time=2026-02-27T16:33:00.897Z level=DEBUG msg=response method=POST path=/fdo/101/msg/20 duration=1.879499ms
+time=2026-02-27T16:33:00.909Z level=DEBUG msg=request method=POST path=/fdo/101/msg/20 remote=127.0.0.1:45612
+time=2026-02-27T16:33:00.916Z level=DEBUG msg=request dump="POST /fdo/101/msg/20 HTTP/1.1\\r\\nHost: localhost:8182\\r\\nAccept: */*\\r\\nAuthorization: Bearer test-secret-token\\r\\nContent-Length: 0\\r\\nContent-Type: application/cbor\\r\\nUser-Agent: curl/7.81.0" body=""
+time=2026-02-27T16:33:00.922Z level=DEBUG msg=response dump="HTTP/1.1 200 OK\\r\\nContent-Length: 50\\r\\nAuthorization: Bearer hN-DshEqYCKOUzLyB-vZqrmutaLIkhiCentC05Jepv3sV0LqcEA8Hc2x7zNrncFi\\r\\nContent-Type: application/cbor\\r\\nMessage-Type: 255" body="[500, 20, \"error decoding TO0.Hello request: EOF\", 1772209980, null]"
+time=2026-02-27T16:33:00.922Z level=DEBUG msg=response method=POST path=/fdo/101/msg/20 duration=12.682812ms
+time=2026-02-27T16:33:00.934Z level=DEBUG msg=request method=POST path=/fdo/101/msg/30 remote=127.0.0.1:45618
+time=2026-02-27T16:33:00.942Z level=DEBUG msg=request dump="POST /fdo/101/msg/30 HTTP/1.1\\r\\nHost: localhost:8182\\r\\nAccept: */*\\r\\nContent-Length: 0\\r\\nContent-Type: application/cbor\\r\\nUser-Agent: curl/7.81.0" body=""
+time=2026-02-27T16:33:00.947Z level=DEBUG msg=response dump="HTTP/1.1 200 OK\\r\\nContent-Length: 53\\r\\nAuthorization: Bearer DlGFKVbky__M3doLM4lB5FpnGz2MNKgsXDtpqC8cMy9x0rGvcnuKXBDnEfuvpYyD\\r\\nContent-Type: application/cbor\\r\\nMessage-Type: 255" body="[500, 30, \"error decoding TO1.HelloRV request: EOF\", 1772209980, null]"
+time=2026-02-27T16:33:00.947Z level=DEBUG msg=response method=POST path=/fdo/101/msg/30 duration=12.311139ms
+time=2026-02-27T16:33:00.948Z level=INFO msg="shutting down server..."
+time=2026-02-27T16:33:00.948Z level=INFO msg="server stopped"
